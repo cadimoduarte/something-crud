@@ -1,0 +1,41 @@
+version: '2'
+services:
+  app-back:
+    image: something-crud:latest
+    ports:
+      - 8080:8080
+    environment:
+      - POSTGRES_DB=exampledb
+      - POSTGRES_USER=exampleuser
+      - POSTGRES_PASSWORD=examplepassword
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+    depends_on:
+      - postgres
+    networks:
+      - app-nextwork
+
+  postgres:
+    image: postgres:9.6
+    hostname: postgres
+    #domainname: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=exampledb
+      - POSTGRES_USER=exampleuser
+      - POSTGRES_PASSWORD=examplepassword
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+    volumes:
+      - ./docker-database-init.sql:/docker-entrypoint-initdb.d/setup.sql
+    networks:
+      - app-nextwork
+
+networks:
+  app-nextwork:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.163.252.0/16
